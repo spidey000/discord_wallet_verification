@@ -1,0 +1,1 @@
+{"nueva_version_semver": "1.1.0", "timestamp_iso8601": "2025-06-25T01:40:47Z", "task_id_relevante": "Fase 2 & 3", "tipo_de_cambio": "feature", "descripcion_del_cambio": "Implementación inicial de la API de verificación (generate_challenge, verify_signature), frontend de firma, lógica básica del bot (/verify, /status, /setup) y script de sincronización de roles."}

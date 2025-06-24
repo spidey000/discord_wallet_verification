@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+supabase-py
+python-dotenv
+pynacl
+solana
+discord.py
+requests
+solders

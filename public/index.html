@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verificación de Wallet Solana</title>
+    <style>
+        body { font-family: sans-serif; background: #2c2f33; color: white; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { text-align: center; padding: 2rem; background: #23272a; border-radius: 8px; }
+        button { background-color: #7289da; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; }
+        button:disabled { background-color: #4f5f98; cursor: not-allowed; }
+        #status { margin-top: 20px; font-size: 14px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Verificación de Wallet</h1>
+        <p>Conecta tu wallet y firma un mensaje para verificar tu propiedad.</p>
+        <p><strong>Este proceso es seguro, no es una transacción y no tiene coste.</strong></p>
+        <button id="verifyButton">Conectar y Firmar</button>
+        <div id="status"></div>
+    </div>
+
+    <!-- Dependencias de Solana Wallet Adapter -->
+    <script src="https://unpkg.com/@solana/web3.js@latest/lib/index.iife.js"></script>
+    <script src="https://unpkg.com/@solana/wallet-adapter-base@latest/lib/index.iife.js"></script>
+    <script src="https://unpkg.com/@solana/wallet-adapter-wallets@latest/lib/index.iife.js"></script>
+    <script src="https://unpkg.com/@solana/wallet-adapter-react@latest/lib/index.iife.js"></script>
+    
+    <!-- Nuestro script -->
+    <script src="app.js"></script>
+</body>
+</html>
