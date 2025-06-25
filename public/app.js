@@ -18,70 +18,78 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Inicializar adaptadores de wallet
-    const { PhantomWalletAdapter } = window.solanaWalletAdapterPhantom;
-    const { SolflareWalletAdapter } = window.solanaWalletAdapterSolflare;
-    const { LedgerWalletAdapter } = window.solanaWalletAdapterLedger;
+    const { getWallets } = window.solanaWalletAdapterWallets;
+    const wallets = getWallets();
+    const walletMap = new Map();
 
-    const wallets = {
-        Phantom: new PhantomWalletAdapter(),
-        Solflare: new SolflareWalletAdapter(),
-        Ledger: new LedgerWalletAdapter(),
-    };
+    // Populate the dropdown with available wallets
+    wallets.forEach(wallet => {
+        const option = document.createElement('option');
+        option.value = wallet.adapter.name;
+        option.textContent = wallet.adapter.name;
+        walletSelect.appendChild(option);
+        walletMap.set(wallet.adapter.name, wallet.adapter);
+    });
 
-    // Función para actualizar el adaptador de wallet activo
+    // Function to update the active wallet adapter
     const updateWalletAdapter = (walletName) => {
         if (currentWalletAdapter) {
-            currentWalletAdapter.removeAllListeners(); // Limpiar listeners del adaptador anterior
+            currentWalletAdapter.removeAllListeners(); // Clean up listeners from previous adapter
             if (currentWalletAdapter.connected) {
-                currentWalletAdapter.disconnect(); // Desconectar si estaba conectado
+                currentWalletAdapter.disconnect(); // Disconnect if it was connected
             }
         }
-        currentWalletAdapter = wallets[walletName];
+        currentWalletAdapter = walletMap.get(walletName);
         
         if (currentWalletAdapter) {
             currentWalletAdapter.on('connect', () => {
-                statusDiv.textContent = `Wallet conectada: ${currentWalletAdapter.publicKey.toBase58()}`;
-                connectedWalletInfo.textContent = `Conectado con: ${walletName} (${currentWalletAdapter.publicKey.toBase58()})`;
-                verifyButton.textContent = 'Firmar Mensaje';
+                statusDiv.textContent = `Wallet connected: ${currentWalletAdapter.publicKey.toBase58()}`;
+                connectedWalletInfo.textContent = `Connected with: ${walletName} (${currentWalletAdapter.publicKey.toBase58()})`;
+                verifyButton.textContent = 'Sign Message';
                 verifyButton.disabled = false;
             });
 
             currentWalletAdapter.on('disconnect', () => {
-                statusDiv.textContent = 'Wallet desconectada.';
+                statusDiv.textContent = 'Wallet disconnected.';
                 connectedWalletInfo.textContent = '';
-                verifyButton.textContent = 'Conectar Wallet';
+                verifyButton.textContent = 'Connect Wallet';
                 verifyButton.disabled = false;
             });
 
             currentWalletAdapter.on('error', (error) => {
-                console.error('Error del adaptador de wallet:', error);
-                statusDiv.textContent = `❌ Error de wallet: ${error.message}`;
+                console.error('Wallet adapter error:', error);
+                statusDiv.textContent = `❌ Wallet error: ${error.message}`;
                 verifyButton.disabled = false;
             });
 
-            // Intentar conectar automáticamente si ya estaba autorizado (ej. Phantom)
+            // Attempt to auto-connect if already authorized (e.g., Phantom)
             if (!currentWalletAdapter.connected && currentWalletAdapter.readyState === 'Installed') {
-                // No llamar a connect aquí directamente, esperar al click del usuario
-                // o manejarlo de forma más sofisticada si se desea auto-conexión.
+                // Do not call connect here directly, wait for user click
             }
         }
-        statusDiv.textContent = `Wallet seleccionada: ${walletName}. Haz clic en "Conectar Wallet".`;
+        statusDiv.textContent = `Wallet selected: ${walletName}. Click "Connect Wallet".`;
         connectedWalletInfo.textContent = '';
-        verifyButton.textContent = 'Conectar Wallet';
+        verifyButton.textContent = 'Connect Wallet';
         verifyButton.disabled = false;
     };
 
-    // Manejar cambio de selección de wallet
+    // Handle wallet selection change
     walletSelect.addEventListener('change', (event) => {
         updateWalletAdapter(event.target.value);
     });
 
-    // Inicializar con la wallet seleccionada por defecto (Phantom)
-    updateWalletAdapter(walletSelect.value);
+    // Initialize with the default selected wallet (first in the list)
+    if (walletSelect.options.length > 0) {
+        updateWalletAdapter(walletSelect.value);
+    } else {
+        statusDiv.textContent = "No Solana wallets found. Please install a wallet extension.";
+        verifyButton.disabled = true;
+        walletSelect.disabled = true;
+    }
 
     verifyButton.addEventListener('click', async () => {
         if (!currentWalletAdapter) {
-            statusDiv.textContent = "Error: No se ha seleccionado un adaptador de wallet.";
+            statusDiv.textContent = "Error: No wallet adapter selected.";
             return;
         }
 
