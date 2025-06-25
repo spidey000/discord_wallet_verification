@@ -12,7 +12,7 @@ load_dotenv()
 DISCORD_TOKEN = os.environ.get("DISCORD_BOT_TOKEN")
 SUPABASE_URL = os.environ.get("SUPABASE_URL")
 SUPABASE_KEY = os.environ.get("SUPABASE_SERVICE_KEY")
-VERCEL_APP_URL = os.environ.get("VERCEL_APP_URL") # ej: https://mi-proyecto.vercel.app
+VERCEL_APP_URL = os.environ.get("VERCEL_APP_URL").strip('"') if os.environ.get("VERCEL_APP_URL") else None # ej: https://mi-proyecto.vercel.app
 
 supabase: Client = create_client(SUPABASE_URL, SUPABASE_KEY)
 
@@ -46,6 +46,7 @@ async def verify(interaction: discord.Interaction):
         
         # 2. Construir el enlace de verificación
         verification_link = f"{VERCEL_APP_URL}/?session_id={session_id}"
+        print(f"DEBUG: Verification Link: {verification_link}")
         
         # 3. Enviar el mensaje efímero al usuario
         embed = discord.Embed(
